@@ -8,17 +8,10 @@ var chai      = require('chai')
   , Sequelize = Support.Sequelize
   , Promise   = Sequelize.Promise
   , cls       = require('continuation-local-storage')
-  , sinon     = require('sinon')
   , current = Support.sequelize;
 
 if (current.dialect.supports.transactions) {
   describe(Support.getTestDialectTeaser('Continuation local storage'), function () {
-    beforeEach(function () {
-      this.sinon = sinon.sandbox.create();
-    });
-    afterEach(function() {
-      this.sinon.restore();
-    });
     before(function () {
       Sequelize.cls = cls.createNamespace('sequelize');
     });
@@ -150,47 +143,6 @@ if (current.dialect.supports.transactions) {
         });
       });
     });
-
-    describe('with useCLS=false', function() {
-      beforeEach(function() {
-        this.sequelize = Support.createSequelizeInstance({ useCLS: false });
-        this.User = this.sequelize.define('user', {
-          name: Sequelize.STRING
-        });
-      });
-
-      it('does not use CLS to share transactions', function () {
-        var self = this;
-        return this.sequelize.transaction(function (t) {
-          return self.User.create({ name: 'bob' }, { transaction: t }).then(function () {
-            return expect(self.User.findAll()).to.eventually.have.length(0);
-          });
-        });
-      });
-    });
-
-    describe('multiple sequelize instances', function() {
-      var secondSequelize;
-      beforeEach(function() {
-        secondSequelize = Support.createSequelizeInstance();
-      });
-
-      it('throws instead of sharing transactions between instances', function() {
-        var self = this;
-        return this.sequelize.transaction(function (t) {
-          var transctionQuerySpy = self.sinon.spy(t.connection, 'query');
-          return self.sequelize.query('SELECT 1;').then(function() {
-            expect(transctionQuerySpy).to.have.been.calledWith('SELECT 1;');
-          }).then(function() {
-            var queryPromise = new Promise(function() {
-              return secondSequelize.query('SELECT 2;');
-            });
-            return expect(queryPromise).to.be.eventually
-              .rejectedWith('Cannot query with a transaction created by another Sequelize instance (transaction obtained from CLS)');
-          });
-        });
-      });
-    })
 
     describe('bluebird shims', function () {
       beforeEach(function () {
