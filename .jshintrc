@@ -3,6 +3,7 @@
   "boss":true,
   "curly":false,
   "eqeqeq":true,
+  "esversion": 6,
   "freeze":true,
   "immed":true, // deprecated
   "indent":2, // deprecated
