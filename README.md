@@ -1,3 +1,9 @@
+What the Fork?
+
+Convoy was experiencing service failures with sequelize 4.x, so we forked it to fix that. We believe this bug is fixed in 5.x, but requires more effort to upgrade (major changes from 4.x)
+
+Read more here: https://convoy.slack.com/archives/C043LQ82T/p1560818399247300
+
 # Sequelize
 
 [![Build Status](https://travis-ci.org/sequelize/sequelize.svg?branch=master)](https://travis-ci.org/sequelize/sequelize)
